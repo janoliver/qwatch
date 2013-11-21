@@ -44,7 +44,10 @@ class Job(object):
         path relative to <Job> of the qstat -x output."""
         a = self.data
         for segment in path.split('.'):
-            a = a[segment]
+            if segment in a:
+                a = a[segment]
+            else:
+                return ""
         return a
 
     def __getattr__(self, name):
@@ -66,7 +69,12 @@ class Job(object):
 
     def get_memory(self):
         """Format the memory usage in MB/KB/GB"""
-        mem = int(self.d('resources_used.mem')[:-2])
+        mem_str = self.d('resources_used.mem')[:-2]
+
+        if mem_str.empty():
+            return "/"
+
+        mem = int(mem_str)
 
         if mem > 1024 * 1024:
             return '%.1f GB' % (mem / (1024. * 1024.))
