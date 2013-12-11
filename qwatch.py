@@ -131,7 +131,8 @@ class QWatchParser(object):
 class QWatch(object):
     def __init__(self, screen):
         self.parser = QWatchParser()
-        self.scr = screen
+        self.screen = screen
+        self.scr = curses.newpad(500,100)
         self.jobs = []
         self.work_timer = None
 
@@ -172,7 +173,7 @@ class QWatch(object):
         self.scr.addstr(0, 25, self.setting_display(self.settings_own))
 
         # refresh display and restart the timer
-        self.scr.refresh()
+        self.refresh()
 
         if self.work_timer:
             self.work_timer.cancel()
@@ -195,6 +196,10 @@ class QWatch(object):
             elif c == ord('u'):
                 self.settings_own = not self.settings_own
                 self.display_header()
+
+    def refresh(self):
+        (y, x) = self.screen.getmaxyx()
+        self.scr.refresh(0, 0, 0, 0, y-1, x-1)
 
     def refresh_data(self):
         if self.settings_auto_refresh:
@@ -221,7 +226,7 @@ class QWatch(object):
         else:
             self.scr.addstr(2, 20, "Currently no jobs in the queue.")
 
-        self.scr.refresh()
+        self.refresh()
 
     def get_jobs(self):
         ret = list()
