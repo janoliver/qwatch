@@ -243,8 +243,11 @@ class QWatch(object):
 
 
 def main(screen):
+
+    curses.use_default_colors()
     qwatch = QWatch(screen)
     qwatch.start()
+
 
 
 if __name__ == '__main__':
